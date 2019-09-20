@@ -12,6 +12,7 @@ import time
 import cv2
 
 from object_detected import ObjectDetected
+from ReportService import ReportService
 
 def classify_frame(net, inputQueue, outputQueue):
 	# keep looping
@@ -41,8 +42,9 @@ def set_outputData(resultsQueue):
 				print("Object recogniced: {}, BOX: x1={} x2={} y1={} y2={}".format(mesh.label,mesh.startX,mesh.endX,mesh.startY,mesh.endY))
 			print("End of Recognition")
 			print("********************************************************************")
+			reportService = ReportService()
+			reportService.Report(data)
 			time.sleep(1)
-
 
 
 # construct the argument parse and parse the arguments

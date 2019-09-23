@@ -3,6 +3,7 @@
 
 # import the necessary packages
 from imutils.video import VideoStream
+from imutils.video import FPS
 from multiprocessing import Process
 from multiprocessing import Queue
 import numpy as np
@@ -11,8 +12,13 @@ import imutils
 import time
 import cv2
 
+import json
+import requests
 from object_detected import ObjectDetected
-from ReportService import ReportService
+
+
+def PostInformation(jsonData):
+	r = requests.post(url="http://odin.latrilop.com/api/v1/Vision/Calculate", data = jsonData)
 
 def classify_frame(net, inputQueue, outputQueue):
 	# keep looping
@@ -33,19 +39,17 @@ def classify_frame(net, inputQueue, outputQueue):
 
 			# write the detections to the output queue
 			outputQueue.put(detections)
-def set_outputData(resultsQueue):
-	while True:
-		if not resultsQueue.empty():
-			data = resultsQueue.get()
-			print("{} Objects detected".format(len(data)))
-			for mesh in data:
-				print("Object recogniced: {}, BOX: x1={} x2={} y1={} y2={}".format(mesh.label,mesh.startX,mesh.endX,mesh.startY,mesh.endY))
-			print("End of Recognition")
-			print("********************************************************************")
-			reportService = ReportService()
-			reportService.Report(data)
-			time.sleep(1)
 
+def ReportInformation(detections):
+	if(len(detections)>0):
+		jsonArray = ""
+		for objectDetected in detections:
+			jsonObject = json.dumps(objectDetected.__dict__)
+			jsonArray += (jsonObject + ",")
+		print(jsonArray)
+		#Uncomment once the API is ready
+		#PostInformation(jsonArray)
+		time.sleep(1)
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -64,9 +68,8 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
 	"dog", "horse", "motorbike", "person", "pottedplant", "sheep",
 	"sofa", "train", "tvmonitor"]
 COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
-	
 IGNORE = set(["bottle","cat", "chair", "cow", "diningtable","dog","pottedplant", "sheep",
-	"sofa", "train", "tvmonitor"])
+"sofa", "train", "tvmonitor"])
 # load our serialized model from disk
 print("[INFO] loading model...")
 net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
@@ -75,7 +78,6 @@ net = cv2.dnn.readNetFromCaffe(args["prototxt"], args["model"])
 # and the list of actual detections returned by the child process
 inputQueue = Queue(maxsize=1)
 outputQueue = Queue(maxsize=1)
-resultsQueue = Queue(maxsize = 1)
 detections = None
 
 # construct a child process *indepedent* from our main process of
@@ -86,16 +88,13 @@ p = Process(target=classify_frame, args=(net, inputQueue,
 p.daemon = True
 p.start()
 
-resultsProcess = Process(target=set_outputData,args=(resultsQueue,))
-resultsProcess.daemon = True
-resultsProcess.start()
-
 # initialize the video stream, allow the cammera sensor to warmup,
 # and initialize the FPS counter
 print("[INFO] starting video stream...")
-vs = VideoStream(src=0).start()
+vs = VideoStream("VID_20190921_212705.mp4").start()
 # vs = VideoStream(usePiCamera=True).start()
 time.sleep(2.0)
+fps = FPS().start()
 
 # loop over the frames from the video stream
 while True:
@@ -117,8 +116,8 @@ while True:
 	# check to see if our detectios are not None (and if so, we'll
 	# draw the detections on the frame)
 	if detections is not None:
-		# loop over the detections
 		objectsDetected = []
+		# loop over the detections
 		for i in np.arange(0, detections.shape[2]):
 			# extract the confidence (i.e., probability) associated
 			# with the prediction
@@ -128,12 +127,11 @@ while True:
 			# is greater than the minimum confidence
 			if confidence < args["confidence"]:
 				continue
+
 			# otherwise, extract the index of the class label from
 			# the `detections`, then compute the (x, y)-coordinates
 			# of the bounding box for the object
 			idx = int(detections[0, 0, i, 1])
-			if CLASSES[idx] in IGNORE:
-				continue
 			dims = np.array([fW, fH, fW, fH])
 			box = detections[0, 0, i, 3:7] * dims
 			(startX, startY, endX, endY) = box.astype("int")
@@ -141,16 +139,8 @@ while True:
 			# draw the prediction on the frame
 			label = "{}: {:.2f}%".format(CLASSES[idx],
 				confidence * 100)
-			detected = ObjectDetected(startX,endX,startY,endY,label)
-			objectsDetected.append(detected)
-			
-			#cv2.rectangle(frame, (startX, startY), (endX, endY),
-				#COLORS[idx], 2)
-			#y = startY - 15 if startY - 15 > 15 else startY + 15
-			#cv2.putText(frame, label, (startX, y),
-				#cv2.FONT_HERSHEY_SIMPLEX, 0.5, COLORS[idx], 2)
-		resultsQueue.put(objectsDetected)
-
+			objectsDetected.append(ObjectDetected(startX,endX,startY,endY,label))
+		ReportInformation(objectsDetected)
 	# show the output frame
 	# cv2.imshow("Frame", frame)
 	key = cv2.waitKey(1) & 0xFF
@@ -159,6 +149,11 @@ while True:
 	if key == ord("q"):
 		break
 
+	# update the FPS counter
+	fps.update()
+
+# stop the timer and display FPS information
+fps.stop()
 print("[INFO] elapsed time: {:.2f}".format(fps.elapsed()))
 print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 

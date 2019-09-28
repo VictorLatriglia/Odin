@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Odin.VisualRecognition.CalculationEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -20,14 +21,13 @@ namespace Odin.VisualRecognition.Models
             List = new List<RecognicedObject>();
         }
 
-        public async IAsyncEnumerable<RecognicedObject> CalculatePositions()
+        public async IAsyncEnumerable<RecognicedObject> CalculatePositions(double offsetDegrees)
         {
             if (List.Count > 0)
             {
                 foreach (RecognicedObject item in List)
                 {
-                    //TODO: Recognice object information (How to build a service for this???)
-                    yield return item;
+                    yield return await VisualPositionamentService.CalculatePosition(item);
                 }
             }
         }

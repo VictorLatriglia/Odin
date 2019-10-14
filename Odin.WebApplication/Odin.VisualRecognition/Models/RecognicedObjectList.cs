@@ -21,13 +21,13 @@ namespace Odin.VisualRecognition.Models
             List = new List<RecognicedObject>();
         }
 
-        public async IAsyncEnumerable<RecognicedObject> CalculatePositions(double offsetDegrees)
+        public IEnumerable<RecognicedObject> CalculatePositions()
         {
             if (List.Count > 0)
             {
                 foreach (RecognicedObject item in List)
                 {
-                    yield return await VisualPositionamentService.CalculatePosition(item);
+                    yield return  VisualPositionamentService.CalculatePosition(item);
                 }
             }
         }

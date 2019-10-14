@@ -6,6 +6,6 @@ namespace Odin.VisualRecognition.Models
 {
     public interface IRecognicedList : IList<RecognicedObject>
     {
-        IAsyncEnumerable<RecognicedObject> CalculatePositions(double offsetDegrees);
+        IEnumerable<RecognicedObject> CalculatePositions();
     }
 }

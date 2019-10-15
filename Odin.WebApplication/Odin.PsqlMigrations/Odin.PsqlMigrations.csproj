@@ -8,4 +8,8 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Odin.DataAccess\Odin.DataAccess.csproj" />
+  </ItemGroup>
+
 </Project>

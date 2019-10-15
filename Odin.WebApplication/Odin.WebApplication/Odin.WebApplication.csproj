@@ -13,11 +13,15 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="3.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="3.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Odin.DataAccess\Odin.DataAccess.csproj" />
+    <ProjectReference Include="..\Odin.PsqlMigrations\Odin.PsqlMigrations.csproj" />
+    <ProjectReference Include="..\Odin.ServiceContracts\Odin.ServiceContracts.csproj" />
+    <ProjectReference Include="..\Odin.ServicesImplementation\Odin.ServicesImplementation.csproj" />
     <ProjectReference Include="..\Odin.VisualRecognition\Odin.VisualRecognition.csproj" />
   </ItemGroup>
 

@@ -10,7 +10,7 @@ namespace Odin.DataAccess.Repository
     public class Repository<T, TId> : RepositoryWithTypedId<T, TId>, IRepository<T, TId>
         where T : class, IEntityWithTypedId<TId>
     {
-        public Repository(DbContext context) : base(context)
+        public Repository(OdinDbContext context) : base(context)
         {
 
         }

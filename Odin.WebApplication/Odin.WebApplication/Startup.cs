@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Odin.DataAccess;
 using Odin.DataAccess.Repository;
+using Odin.ServiceContracts;
+using Odin.ServicesImplementation;
 
 namespace Odin.WebApplication
 {
@@ -33,6 +35,7 @@ namespace Odin.WebApplication
             services.AddControllersWithViews();
 
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
+            services.AddTransient<IDataSaver, DataSaver>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

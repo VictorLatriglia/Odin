@@ -56,9 +56,8 @@ namespace Odin.VisualRecognition.CalculationEngine
                     var degreesOffset = pixelsFromNorth * DegreesPerPixel;
                     long offsetFromNorth = (long)(distanceToObject * Math.Cos(degreesOffset));
                     long offsetFromWest = (long)Math.Sqrt(Math.Pow(distanceToObject, 2) - Math.Pow(offsetFromNorth, 2));
-                    //TODO: Fix positionament rounding
-                    long lat = (long)(lat0 + (180 / Math.PI) * (offsetFromNorth / 6378137));
-                    long lon = (long)(lon0 + (180 / Math.PI) * (offsetFromWest / 6378137) / Math.Cos(lat0));
+                    double lat = (lat0 + (180 / Math.PI) * (offsetFromNorth / 6378137));
+                    double lon = (lon0 + (180 / Math.PI) * (offsetFromWest / 6378137) / Math.Cos(lat0));
                     recognicedObject.Latitude = lat;
                     recognicedObject.Longitude = lon;
                 }

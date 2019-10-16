@@ -11,7 +11,7 @@ namespace Odin.ServicesImplementation
 {
     public class DataSaver : IDataSaver
     {
-        IRepository<ObjectDetected, int> objectDetectedRepo;
+        readonly IRepository<ObjectDetected, int> objectDetectedRepo;
         public DataSaver(
             IRepository<ObjectDetected, int> objectDetectedRepo)
         {
@@ -20,7 +20,7 @@ namespace Odin.ServicesImplementation
 
         public async Task SaveData(RecognicedObject data)
         {
-            await this.objectDetectedRepo.AddAsync(new ObjectDetected { Object = data.Detection.ToString(), Latitude = data.Latitude, Longitude = data.Longitude });
+            await this.objectDetectedRepo.AddAsync(new ObjectDetected { Object = data.Detection.ToString(), Latitude = Convert.ToDecimal(data.Latitude), Longitude = Convert.ToDecimal(data.Longitude) });
             await this.objectDetectedRepo.SaveChangesAsync();
         }
         

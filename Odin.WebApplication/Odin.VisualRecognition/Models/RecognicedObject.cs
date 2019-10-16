@@ -8,8 +8,8 @@ namespace Odin.VisualRecognition.Models
     public class RecognicedObject
     {
         public ObjectDetectedSquare DetectionSquare { get; set; }
-        public long Latitude { get; internal set; }
-        public long Longitude { get; internal set; }
+        public double Latitude { get; internal set; }
+        public double Longitude { get; internal set; }
         public DetectionType Detection { get; set; }
 
         public RecognicedObject(ObjectDetectedSquare objectDetected, DetectionType detectionType)

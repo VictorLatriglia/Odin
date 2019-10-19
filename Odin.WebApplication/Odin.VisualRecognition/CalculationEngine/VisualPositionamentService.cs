@@ -35,8 +35,8 @@ namespace Odin.VisualRecognition.CalculationEngine
         private const double CameraAOV = 60;
         private const double CameraFocalLenght = 11;
         private const double CameraHeight = 100;
-        private const double lat0 = 5.331761;
-        private const double lon0 = -72.398830;
+        private const double lat0 = 5.33187144;
+        private const double lon0 = -72.39886174;
         private static readonly double DegreesPerPixel = CameraAOV / (Math.Sqrt(Math.Pow(CameraPixelsHeight, 2) + Math.Pow(CameraPixelsWidth, 2)));
         ///
 
@@ -54,10 +54,10 @@ namespace Odin.VisualRecognition.CalculationEngine
                     if (pixelsFromNorth < 0)
                         pixelsFromNorth *= -1;
                     var degreesOffset = pixelsFromNorth * DegreesPerPixel;
-                    long offsetFromNorth = (long)(distanceToObject * Math.Cos(degreesOffset));
-                    long offsetFromWest = (long)Math.Sqrt(Math.Pow(distanceToObject, 2) - Math.Pow(offsetFromNorth, 2));
-                    double lat = (lat0 + (180 / Math.PI) * (offsetFromNorth / 6378137));
-                    double lon = (lon0 + (180 / Math.PI) * (offsetFromWest / 6378137) / Math.Cos(lat0));
+                    double offsetFromNorth = (distanceToObject * Math.Cos(degreesOffset));
+                    double offsetFromWest = Math.Sqrt(Math.Pow(distanceToObject, 2) - Math.Pow(offsetFromNorth, 2));
+                    decimal lat = Convert.ToDecimal(lat0 + (180 / Math.PI) * (offsetFromNorth / 6378137));
+                    decimal lon = Convert.ToDecimal(lon0 + (180 / Math.PI) * (offsetFromWest / 6378137) / Math.Cos(lat0));
                     recognicedObject.Latitude = lat;
                     recognicedObject.Longitude = lon;
                 }

@@ -10,6 +10,7 @@ namespace Odin.DataAccess
     public class OdinDbContext : DbContext
     {
         public DbSet<ObjectDetected> Detections { get; set; }
+        public DbSet<DetectionBatch> Batchs { get; set; }
         public OdinDbContext(DbContextOptions<OdinDbContext> options) : base(options)
         {
         }

@@ -8,6 +8,6 @@ namespace Odin.ServiceContracts
 {
     public interface IDataSaver
     {
-        Task SaveData(RecognicedObject data);
+        Task SaveData(List<RecognicedObject> data);
     }
 }

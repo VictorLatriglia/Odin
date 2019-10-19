@@ -25,10 +25,9 @@ namespace Odin.WebApplication.Controllers
             IRecognicedList elements = new RecognicedObjectList();
             foreach (var data in recognicedData.Where(x=>x.label.Equals("car")))
                 elements.Add(new RecognicedObject(new ObjectDetectedSquare(data.startX, data.endX, data.startY, data.endY), ClassificationTypes.DetectionType.Car));
-
-            foreach (var item in elements.CalculatePositions())
-                await dataSaverService.SaveData(item);
-
+            List<RecognicedObject> dataDetection = new List<RecognicedObject>();
+            dataDetection.AddRange(elements.CalculatePositions());
+            await dataSaverService.SaveData(dataDetection);
             return "SUCCESS";
         }
     }

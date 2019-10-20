@@ -29,7 +29,7 @@ namespace Odin.VisualRecognition.CalculationEngine
     public static class VisualPositionamentService
     {
         /// TODO: Replace this for whatever the device recognices
-        private const double DegreesFromNorth = 0;
+        private const double DegreesFromNorth = 310;
         private const double CameraPixelsWidth = 800;
         private const double CameraPixelsHeight = 800;
         private const double CameraAOV = 60;
@@ -48,14 +48,20 @@ namespace Odin.VisualRecognition.CalculationEngine
             {
                 var ObjectHeight = recognicedObject.DetectionSquare.EndY - recognicedObject.DetectionSquare.StartY;
                 var distanceToObject = ((CameraFocalLenght * constantReading * CameraPixelsHeight) / (ObjectHeight * CameraHeight))/1000;
-                if (DegreesFromNorth == 0)
+                if (DegreesFromNorth != 0)
                 {
                     var pixelsFromNorth = CameraPixelsWidth - recognicedObject.DetectionSquare.StartX;
                     if (pixelsFromNorth < 0)
                         pixelsFromNorth *= -1;
                     var degreesOffset = pixelsFromNorth * DegreesPerPixel;
+                    distanceToObject += 10;
                     double offsetFromNorth = (distanceToObject * Math.Cos(degreesOffset));
                     double offsetFromWest = Math.Sqrt(Math.Pow(distanceToObject, 2) - Math.Pow(offsetFromNorth, 2));
+                    if (degreesOffset > (CameraAOV / 2))
+                    {
+                        offsetFromWest*= -1;
+                        offsetFromWest -= 10;
+                    }
                     decimal lat = Convert.ToDecimal(lat0 + (180 / Math.PI) * (offsetFromNorth / 6378137));
                     decimal lon = Convert.ToDecimal(lon0 + (180 / Math.PI) * (offsetFromWest / 6378137) / Math.Cos(lat0));
                     recognicedObject.Latitude = lat;

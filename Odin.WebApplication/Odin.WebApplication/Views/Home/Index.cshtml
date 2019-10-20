@@ -4,5 +4,64 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <div id="map" style="height:600px"></div>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+@section Scripts{
+    <script src="~/js/SignalR/signalr.js"></script>
+    <script>
+        $(document).ready(function () {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("/supervisionHub")
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+            connection.start().catch(err => console.error(err.toString()));
+
+            connection.on("dataUpdate", (message) => {
+                var data = [];
+                data = JSON.parse(message);
+                console.log("dataReceived",data);
+                ClearMarkers();
+                data.forEach(obj => {
+                    var latitude = obj.Latitude;
+                    var longitude = obj.Longitude;
+                    $('#map').gmap3().circle({
+                        center: [latitude, longitude],
+                        radius : 20,
+                        fillColor : "#FFAF9F",
+                        strokeColor : "#FF512F"
+                      });
+                    $('#map').gmap3().marker(function (map) {
+                        return {
+                            position: [latitude, longitude]
+                        };
+                    });
+                });
+            });
+        });
+        function ClearMarkers() {
+            var handler = $('#map').gmap3();
+            var elements = handler.get();
+            if (elements && elements.length > 2) {
+                for (var i = 2; i < elements.length; i++) {
+                    var marker = handler.get(i);
+                    if (marker) {
+                        marker.setMap(null);
+                        marker.visible = false;
+                    }
+                }
+            }
+        }
+        $('#map')
+            .gmap3({
+                center: [5.3319166,-72.3988348],
+                zoom: 19,
+                //key: 'AIzaSyAdY8R5lQPdDO_ffF9WADgbYVsYmpfv3Vw'
+            }).marker(function (map) {
+                    return {
+                        position: [5.33187144, -72.39886174],
+                        icon: "https://maps.google.com/mapfiles/marker_green.png"
+                    };
+            });
+    </script>
+}

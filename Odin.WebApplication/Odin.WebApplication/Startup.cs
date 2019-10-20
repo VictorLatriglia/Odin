@@ -13,6 +13,8 @@ using Odin.DataAccess;
 using Odin.DataAccess.Repository;
 using Odin.ServiceContracts;
 using Odin.ServicesImplementation;
+using Odin.WebApplication.Hubs;
+using Odin.WebApplication.Services;
 
 namespace Odin.WebApplication
 {
@@ -33,9 +35,10 @@ namespace Odin.WebApplication
                 options.UseNpgsql(Configuration.GetConnectionString("OdinDbContext"),
                                     optionsActions => optionsActions.MigrationsAssembly("Odin.PsqlMigrations")).EnableSensitiveDataLogging());
             services.AddControllersWithViews();
-
+            services.AddSignalR();
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
             services.AddTransient<IDataSaver, DataSaver>();
+            services.AddTransient<IRecognitionService, RecognitionService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,6 +66,7 @@ namespace Odin.WebApplication
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<SupervisionHub>("/supervisionHub");
             });
         }
     }
